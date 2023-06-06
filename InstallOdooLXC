@@ -37,4 +37,4 @@ addons_path =
     /home/odoo/odoo/odoo/addons' > /home/odoo/odoo.conf"
 
 sudo lxc-info -n $1 -iH
-sudo lxc-attach -n $1 -- su odoo -c '/home/odoo/odoo/odoo-bin -c /home/odoo/odoo.conf'
+sudo lxc-attach -n $1 -- su odoo -c '/home/odoo/odoo/odoo-bin -c /home/odoo/odoo.conf -i base --stop-after-init -d odoo'
