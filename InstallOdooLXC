@@ -1,26 +1,22 @@
 #!/bin/bash
-
-
 sudo lxc-create -t download -n $1 -- --dist ubuntu --release jammy --arch amd64
 sudo lxc-start $1
 sudo lxc-info $1
 sudo lxc-attach -n $1 -- sudo useradd -m -d /home/odoo -s /bin/bash odoo
+sudo lxc-attach -n $1 -- sudo apt-get update
 sudo lxc-attach -n $1 -- sudo apt-get -y install postgresql postgresql-client
 sudo lxc-attach -n $1 -- su postgres -c "psql -c 'create database odoo'"
-sudo lxc-attach -n $1 -- su postgres -c "psql -c 'create user odoo with encrypted password '\''odoo'\'' '"
-grant all privileges on database odoo to odoo
+sudo lxc-attach -n $1 -- su postgres -c "psql -c 'create user odoo with encrypted password '\''odoo'\''; grant all privileges on database odoo to odoo;'"
 
 sudo lxc-attach -n $1 -- sudo apt-get -y install  git
-sudo lxc-attach -n $1 -- su odoo -c 'cd /home/odoo ; git clone https://github.com/Odoo/odoo.git --depth 1 --branch 16.0 --single-branch odoo'
-sudo lxc-attach -n $1 -- sudo apt-get update
+sudo lxc-attach -n $1 -- su odoo -c 'cd /home/odoo; git clone https://github.com/Odoo/odoo.git --depth 1 --branch 16.0 --single-branch odoo'
 sudo lxc-attach -n $1 -- sudo apt-get -y install python3-pip libldap2-dev libpq-dev libsasl2-dev
 sudo lxc-attach -n $1 -- su odoo -c 'pip install -r /home/odoo/odoo/requirements.txt'
-
 
 sudo lxc-attach -n $1 -- sudo apt-get install -y software-properties-common
 sudo lxc-attach -n $1 -- sudo apt-add-repository -y "deb http://security.ubuntu.com/ubuntu focal-security main"
 
-sudo lxc-attach -n $1 --  sudo apt-get -yq update
+sudo lxc-attach -n $1 -- sudo apt-get -yq update
 sudo lxc-attach -n $1 -- sudo apt-get -y install wget openssh-server
 
 sudo lxc-attach -n $1 -- wget "https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.focal_amd64.deb"
