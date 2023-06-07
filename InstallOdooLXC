@@ -2,7 +2,14 @@
 sudo lxc-create -t download -n $1 -- --dist ubuntu --release jammy --arch amd64
 sudo lxc-start $1
 sudo lxc-info $1
-sudo lxc-attach -n $1 -- sudo useradd -m -d /home/odoo -s /bin/bash odoo
+sudo lxc-attach -n $1 -- useradd -m -d /home/odoo -s /bin/bash odoo
+
+# Ask user to enter password
+echo "Ingrese la contraseña para el usuario odoo:"
+read -s password
+
+# Set the password for the "odoo" user inside the container
+echo "odoo:$password" | sudo lxc-attach -n $1 -- chpasswd
 sudo lxc-attach -n $1 -- sudo apt-get update
 sudo lxc-attach -n $1 -- sudo apt-get -y install postgresql postgresql-client
 sudo lxc-attach -n $1 -- su postgres -c "psql -c 'create database odoo'"
